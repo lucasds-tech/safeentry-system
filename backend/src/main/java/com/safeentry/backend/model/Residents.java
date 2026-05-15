@@ -1,7 +1,8 @@
 package com.safeentry.backend.model;
 
 import jakarta.persistence.*;
-import lombok.*;;
+import lombok.*;
+import org.hibernate.annotations.processing.Pattern;;
 
 @Data
 @Entity
@@ -21,9 +22,6 @@ public class Residents {
 
     @Column(name = "document")
     private String document;
-
-    public Residents() {
-    }
 
 }
 
