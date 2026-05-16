@@ -29,6 +29,10 @@ public class Residents {
     @Column(name = "document")
     private String document;
 
+    @NotBlank(message = "The residence is required.")
+    @Column(name = "residence")
+    private String residence;
+
 }
 
 

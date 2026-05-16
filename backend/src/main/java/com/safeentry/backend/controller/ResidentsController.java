@@ -27,8 +27,8 @@ public class ResidentsController {
     @PostMapping("/residents")
     public ResponseEntity<?> createResident(@Valid @RequestBody Residents resident) {
         try {
-            Residents nuevoResident = residentService.salvar(resident);
-            return ResponseEntity.ok(nuevoResident);
+            Residents newResident = residentService.salvar(resident);
+            return ResponseEntity.ok(newResident);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -55,6 +55,7 @@ public class ResidentsController {
             residents.setName(residentsInfo.getName());
             residents.setLastName(residentsInfo.getLastName());
             residents.setDocument(residentsInfo.getDocument());
+            residents.setResidence(residentsInfo.getResidence());
 
             Residents updatedResidents = residentService.salvar(residents);
             return ResponseEntity.ok(updatedResidents);
