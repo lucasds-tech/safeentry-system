@@ -46,8 +46,19 @@ export function ResidentView({ id }: ResidentViewProps) {
     )
   }
 
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("pt-BR", {
+  const formatDate = (date: Date | string | undefined) => {
+
+    if (!date) {
+      return "Não disponível"
+    }
+
+    const parsedDate = new Date(date)
+
+    if (isNaN(parsedDate.getTime())) {
+      return "Não disponível"
+    }
+
+    return parsedDate.toLocaleDateString("pt-BR", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",

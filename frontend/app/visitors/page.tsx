@@ -7,6 +7,7 @@ import { ArrowLeft, UserCheck } from "lucide-react"
 export default function VisitorsPage() {
 
   const [visitors, setVisitors] = useState<any[]>([])
+  const [errorMessage, setErrorMessage] = useState("")
 
   const [form, setForm] = useState({
     name: "",
@@ -36,13 +37,25 @@ export default function VisitorsPage() {
 
     try {
 
-      await fetch("http://localhost:8080/api/v1/visitors", {
+      setErrorMessage("")
+
+      if (!form.name || !form.document || !form.residence) {
+        setErrorMessage("Preencha todos os campos obrigatórios.")
+        return
+      }
+
+      const response = await fetch("http://localhost:8080/api/v1/visitors", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(form)
       })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(errorText || "Erro ao salvar visitante.")
+      }
 
       setForm({
         name: "",
@@ -52,8 +65,9 @@ export default function VisitorsPage() {
 
       load()
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao salvar visitante:", error)
+      setErrorMessage(error.message || "Erro ao salvar visitante.")
     }
   }
 
@@ -90,11 +104,18 @@ export default function VisitorsPage() {
 
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
 
+        {errorMessage && (
+          <div className="mb-6 rounded-lg border border-red-500 bg-red-500/10 px-4 py-3 text-sm text-red-500">
+            {errorMessage}
+          </div>
+        )}
+
         <form onSubmit={submit} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
 
           <input
             className="rounded-lg border border-border bg-background p-3 text-foreground outline-none focus:ring-2 focus:ring-primary"
             placeholder="Nome"
+            required
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
@@ -102,6 +123,7 @@ export default function VisitorsPage() {
           <input
             className="rounded-lg border border-border bg-background p-3 text-foreground outline-none focus:ring-2 focus:ring-primary"
             placeholder="Documento"
+            required
             value={form.document}
             onChange={(e) => setForm({ ...form, document: e.target.value })}
           />
@@ -109,6 +131,7 @@ export default function VisitorsPage() {
           <input
             className="rounded-lg border border-border bg-background p-3 text-foreground outline-none focus:ring-2 focus:ring-primary"
             placeholder="Residência"
+            required
             value={form.residence}
             onChange={(e) => setForm({ ...form, residence: e.target.value })}
           />
