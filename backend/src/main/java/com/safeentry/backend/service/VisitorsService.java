@@ -16,13 +16,23 @@ public class VisitorsService {
     public Visitors salvar(Visitors visitors) {
 
         String doc = visitors.getDocument();
+        
+        if (doc == null || doc.isBlank()) {
+            throw new IllegalArgumentException("O documento é obrigatório.");
+        }
+        doc = doc.replaceAll("\\D", "");
+        visitors.setDocument(doc);
 
-        // Valida tamanho do documento
-        if (doc == null || (doc.length() != 11 && (doc.length() < 7 || doc.length() > 9))) {
+        // Validação de campo vazio
+        if (doc.isBlank()) {
+            throw new IllegalArgumentException("O documento é obrigatório.");
+        }
 
+        // Validação de tamanho
+        if (doc.length() != 11 && (doc.length() < 7 || doc.length() > 9)) {
             throw new IllegalArgumentException(
                     "Documento inválido. Deve ser um RG (7-9 dígitos) ou CPF (11 dígitos)."
-            );
+                );
         }
 
         // Se tiver 11 dígitos, valida CPF
@@ -33,9 +43,8 @@ public class VisitorsService {
             }
         }
 
-        // VALIDA DOCUMENTO DUPLICADO
-        Optional<Visitors> existingVisitor =
-                visitorsRepository.findByDocument(doc);
+        // Algoritmo básico de validação de CPF (Dígitos verificadores)
+        Optional<Visitors> existingVisitor = visitorsRepository.findByDocument(doc);
 
         if (existingVisitor.isPresent()
                 && !existingVisitor.get().getId().equals(visitors.getId())) {
@@ -53,38 +62,25 @@ public class VisitorsService {
         if (cpf.matches("(\\d)\\1{10}")) return false;
 
         try {
-
-            // 1º dígito
-            int sm = 0;
-            int weight = 10;
-
+            // Cálculo do 1º dígito
+            int sm = 0, weight = 10;
             for (int i = 0; i < 9; i++) {
                 sm += (Character.getNumericValue(cpf.charAt(i)) * weight--);
             }
-
             int r = 11 - (sm % 11);
+            char dig10 = (r == 10 || r == 11) ? '0' : (char) (r + 48);
 
-            char dig10 = (r == 10 || r == 11)
-                    ? '0'
-                    : (char) (r + 48);
-
-            // 2º dígito
+            // Cálculo do 2º dígito
             sm = 0;
             weight = 11;
-
             for (int i = 0; i < 10; i++) {
                 sm += (Character.getNumericValue(cpf.charAt(i)) * weight--);
             }
-
             r = 11 - (sm % 11);
-
-            char dig11 = (r == 10 || r == 11)
-                    ? '0'
-                    : (char) (r + 48);
+            char dig11 = (r == 10 || r == 11) ? '0' : (char) (r + 48);
 
             return (dig10 == cpf.charAt(9))
                     && (dig11 == cpf.charAt(10));
-
         } catch (Exception e) {
             return false;
         }

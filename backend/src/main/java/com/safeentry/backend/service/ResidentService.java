@@ -16,15 +16,27 @@ public class ResidentService {
     public Residents salvar(Residents residents) {
 
         String doc = residents.getDocument();
+        
+        if (doc == null || doc.isBlank()) {
+            throw new IllegalArgumentException("O documento é obrigatório.");
+        }
+        doc = doc.replaceAll("\\D", "");
+        residents.setDocument(doc);
 
-        // Valida o tamanho básico para rejeitar de cara
-        if (doc == null || (doc.length() != 11 && (doc.length() < 7 || doc.length() > 9))) {
-            throw new IllegalArgumentException(
-                    "Documento inválido. Deve ser um RG (7-9 dígitos) ou CPF (11 dígitos)."
-            );
+        // Validação de campo vazio
+        if (doc.isBlank()) {
+            throw new IllegalArgumentException("O documento é obrigatório.");
         }
 
-        // Se tiver 11 digitos, será tratado como CPF
+        // Validação de tamanho
+        if (doc.length() != 11 && (doc.length() < 7 || doc.length() > 9)) {
+
+            throw new IllegalArgumentException(
+                    "Documento inválido. Deve ser um RG (7-9 dígitos) ou CPF (11 dígitos)."
+                );
+        }
+
+        // Se tiver 11 dígitos, valida CPF
         if (doc.length() == 11) {
             if (!isCpfValido(doc)) {
                 throw new IllegalArgumentException("CPF inválido.");
@@ -32,8 +44,7 @@ public class ResidentService {
         }
 
         // VALIDA DOCUMENTO DUPLICADO
-        Optional<Residents> existingResident =
-                residentRepository.findByDocument(doc);
+        Optional<Residents> existingResident = residentRepository.findByDocument(doc);
 
         if (existingResident.isPresent()
                 && !existingResident.get().getId().equals(residents.getId())) {
