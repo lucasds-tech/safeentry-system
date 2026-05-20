@@ -79,6 +79,35 @@ export function ResidentsList() {
     }
   }
 
+  const formatDocument = (value: string) => {
+
+  const numbers = value.replace(/\D/g, "")
+
+  // CPF
+  if (numbers.length === 11) {
+    return numbers
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2")
+  }
+
+  // RG 9 / 8 dígitos
+  if (numbers.length === 9) {
+    return numbers
+      .replace(/(\d{2})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1})$/, "$1-$2")
+  }
+  if (numbers.length === 8) {
+    return numbers
+      .replace(/(\d{1})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1})$/, "$1-$2")
+  }
+
+  return value
+}
+
   if (isLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
@@ -165,7 +194,7 @@ export function ResidentsList() {
                       <TableCell className="font-medium text-foreground">{resident.name}</TableCell>
                       <TableCell className="text-foreground">{resident.lastName}</TableCell>
                       <TableCell className="text-muted-foreground font-mono text-sm">
-                        {resident.document}
+                        {formatDocument(resident.document)}
                       </TableCell>
                       <TableCell className="text-foreground">
                         {resident.residence}

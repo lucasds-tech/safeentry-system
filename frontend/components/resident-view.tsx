@@ -114,7 +114,7 @@ export function ResidentView({ id }: ResidentViewProps) {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <FileText className="h-4 w-4" />
-              Documento (CPF)
+              Documento
             </div>
             <p className="font-mono text-lg font-medium text-foreground">{resident.document}</p>
           </div>
