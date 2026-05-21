@@ -46,6 +46,22 @@ export function ResidentView({ id }: ResidentViewProps) {
     )
   }
 
+  const formatDocument = (value: string) => {
+  const numbers = value.replace(/\D/g, "")
+
+  if (numbers.length === 11) {
+    return numbers
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2")
+  }
+
+  return numbers
+    .replace(/(\d{2})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1})$/, "$1-$2")
+}
+
   const formatDate = (date: Date | string | undefined) => {
 
     if (!date) {
@@ -116,7 +132,7 @@ export function ResidentView({ id }: ResidentViewProps) {
               <FileText className="h-4 w-4" />
               Documento
             </div>
-            <p className="font-mono text-lg font-medium text-foreground">{resident.document}</p>
+            <p className="font-mono text-lg font-medium text-foreground">{formatDocument(resident.document)}</p>
           </div>
 
           <div className="space-y-2">
